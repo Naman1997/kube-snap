@@ -17,6 +17,10 @@ spec:
       containers:
       - name: kube-snap
         image: namanarora/kube-snap:latest
+        volumeMounts:
+          - name: git-secrets
+            mountPath: "/etc/secrets"
+            readOnly: true
         resources:
           requests:
             memory: "64Mi"
@@ -24,3 +28,7 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+      volumes:
+      - name: git-secrets
+        secret:
+          secretName: git-secrets
