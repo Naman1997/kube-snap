@@ -20,7 +20,6 @@ import (
 	securityv1 "github.com/openshift/api/security/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	userv1 "github.com/openshift/api/user/v1"
-	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
@@ -29,11 +28,9 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer/versioning"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd/api"
 )
 
 const Version = "v1"
@@ -98,8 +95,6 @@ func main() {
 	}
 
 	s := scheme.Scheme
-	utilruntime.Must(api.AddToScheme(s))
-	utilruntime.Must(v1.AddToScheme(s))
 	serializer := json.NewYAMLSerializer(json.DefaultMetaFactory, s, s)
 	Codec = versioning.NewDefaultingCodecForScheme(
 		s,
