@@ -28,29 +28,35 @@ func generateCodec() runtime.Codec {
 func saveNodes(clientset *kubernetes.Clientset, codec runtime.Codec) {
 	nodes, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	checkIfError(err)
-
-	// Create the nodes dir
 	createDir(nodePath)
+	existing := findExistingConfigs(nodePath)
+	var current []string
 
-	for node_index := range nodes.Items {
-		node := nodes.Items[node_index]
+	for index := range nodes.Items {
+		node := nodes.Items[index]
 		yaml, err := runtime.Encode(codec, &node)
 		checkIfError(err)
-		createFile(nodePath+node.GetName(), string(yaml))
+		path := nodePath + node.GetName()
+		current = append(current, path)
+		createFile(path, string(yaml))
 	}
+	deleteMissingConfigs(current, existing)
 }
 
 func saveNamespaces(clientset *kubernetes.Clientset, codec runtime.Codec) {
 	namespaces, err := clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	checkIfError(err)
-
-	// Create the nodes dir
 	createDir(namspacePath)
+	existing := findExistingConfigs(namspacePath)
+	var current []string
 
-	for node_index := range namespaces.Items {
-		namespace := namespaces.Items[node_index]
+	for index := range namespaces.Items {
+		namespace := namespaces.Items[index]
 		yaml, err := runtime.Encode(codec, &namespace)
 		checkIfError(err)
-		createFile(namspacePath+namespace.GetName(), string(yaml))
+		path := namspacePath + namespace.GetName()
+		current = append(current, path)
+		createFile(path, string(yaml))
 	}
+	deleteMissingConfigs(current, existing)
 }

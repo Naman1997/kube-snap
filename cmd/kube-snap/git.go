@@ -5,6 +5,7 @@ import (
 	"time"
 
 	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
@@ -28,14 +29,14 @@ func checkCleanStatus(worktree *git.Worktree) bool {
 	return status.IsClean()
 }
 
-func commitChanges(worktree *git.Worktree) error {
-	_, err := worktree.Commit("Snapshot taken on "+time.Now().UTC().String(), &git.CommitOptions{
+func commitChanges(worktree *git.Worktree) (plumbing.Hash, error) {
+	commit, err := worktree.Commit("Snapshot taken on "+time.Now().UTC().String(), &git.CommitOptions{
 		Author: &object.Signature{
 			Name: "kube-snap",
 			When: time.Now(),
 		},
 	})
-	return err
+	return commit, err
 }
 
 func push(repo *git.Repository) {

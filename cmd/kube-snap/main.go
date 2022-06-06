@@ -19,7 +19,8 @@ func main() {
 	// Create the CloneDir
 	createDir(CloneDir)
 
-	// Git clone a repo using creds from a secret
+	// TODO: Only pull the latest changes if repo exists on disk
+	// Clone the repo
 	repo, err := cloneRepo()
 	fmt.Println()
 	if err != nil {
@@ -72,7 +73,7 @@ func main() {
 	} else {
 		// Commit all files
 		fmt.Println("Executing git commit.")
-		err = commitChanges(worktree)
+		_, err := commitChanges(worktree)
 		checkIfError(err)
 
 		// Git push using default options
