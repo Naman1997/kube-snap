@@ -8,30 +8,38 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
-func CloneRepo() (*git.Repository, error) {
+func cloneRepo() (*git.Repository, error) {
 	return git.PlainClone(CloneDir, false, &git.CloneOptions{
 		URL:      getValueOf("repo-url", ""),
 		Progress: os.Stdout,
 	})
 }
 
-func AddAll(worktree *git.Worktree) error {
+func addAll(worktree *git.Worktree) error {
 	return worktree.AddWithOptions(&git.AddOptions{
 		All:  true,
 		Path: CloneDir,
 	})
 }
 
-func CommitChanges(worktree *git.Worktree) error {
+func checkCleanStatus(worktree *git.Worktree) bool {
+	status, err := worktree.Status()
+	checkIfError(err)
+	return status.IsClean()
+}
+
+func commitChanges(worktree *git.Worktree) error {
 	_, err := worktree.Commit("Snapshot taken on "+time.Now().UTC().String(), &git.CommitOptions{
 		Author: &object.Signature{
-			Name: getValueOf("commit-author", "kube-snap"),
+			Name: "kube-snap",
 			When: time.Now(),
 		},
 	})
 	return err
 }
 
-func Push(repo *git.Repository) {
-	repo.Push(&git.PushOptions{})
+func push(repo *git.Repository) {
+	repo.Push(&git.PushOptions{
+		Force: true,
+	})
 }

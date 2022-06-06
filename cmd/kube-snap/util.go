@@ -18,7 +18,9 @@ func createFile(path string, data string) {
 	path += ".yaml"
 	if _, err := os.Stat(path); err == nil {
 		os.Remove(path)
-		fmt.Println("Re-creating file: ", strings.Replace(path, "/repo/", "", 1))
+		fmt.Println("Writing to file: ", strings.Replace(path, "/repo/", "", 1))
+	} else {
+		fmt.Println("Created new file: ", path)
 	}
 
 	f, err := os.Create(path)
@@ -31,15 +33,21 @@ func createFile(path string, data string) {
 	if err2 != nil {
 		panic(err2.Error())
 	}
-
-	fmt.Println("Created: ", path)
 }
 
-func CheckIfError(err error) {
+func checkIfError(err error) {
 	if err == nil {
 		return
 	}
 
 	fmt.Printf("\x1b[31;1m%s\x1b[0m\n", fmt.Sprintf("error: %s", err))
 	os.Exit(1)
+}
+
+func createDir(dir string) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.Mkdir(dir, os.ModePerm); err != nil {
+			checkIfError(err)
+		}
+	}
 }
