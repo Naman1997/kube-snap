@@ -24,12 +24,12 @@ func main() {
 	repo, err := cloneRepo()
 	fmt.Println()
 	if err != nil {
-		checkIfError(err, "Unable to clone repo")
+		checkIfError(err, "Unable to clone repo.")
 	}
 
 	// Generate worktree
 	worktree, err := repo.Worktree()
-	checkIfError(err, "Unable to generate worktree")
+	checkIfError(err, "Unable to generate worktree.")
 
 	// TODO: Figure out how to switch branches using git-go
 	// https://github.com/go-git/go-git/issues/241
@@ -40,11 +40,11 @@ func main() {
 
 	// Create the in-cluster config
 	config, err := rest.InClusterConfig()
-	checkIfError(err, "Unable to generate in-cluster config")
+	checkIfError(err, "Unable to generate in-cluster config.")
 
 	// Create the clientset
 	clientset, err := kubernetes.NewForConfig(config)
-	checkIfError(err, "Unable to generate clientset")
+	checkIfError(err, "Unable to generate clientset.")
 
 	// Generate codec for serialization
 	codec := generateCodec()
@@ -57,9 +57,9 @@ func main() {
 
 	// Add all files
 	fmt.Println()
-	fmt.Println("Executing git add --all.")
+	fmt.Println("Executing git add.")
 	err = addAll(worktree)
-	checkIfError(err, "Unable to execute git add --all")
+	checkIfError(err, "Unable to execute git add.")
 
 	// Check if worktree is clean
 	fmt.Println("Checking git status.")
@@ -69,7 +69,7 @@ func main() {
 		// Commit all files
 		fmt.Println("Executing git commit.")
 		_, err := commitChanges(worktree)
-		checkIfError(err, "Unable to execute git commit")
+		checkIfError(err, "Unable to execute git commit.")
 
 		// Git push using default options
 		fmt.Println("Executing git push.")

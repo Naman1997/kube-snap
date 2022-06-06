@@ -50,7 +50,7 @@ func checkIfError(err error, message string) {
 
 func createDir(dir string) {
 	if err := os.Mkdir(dir, os.ModePerm); err != nil {
-		checkIfError(err, "Unable to create dir: "+dir)
+		checkIfError(err, "Unable to create dir: "+dir+".")
 	}
 }
 
