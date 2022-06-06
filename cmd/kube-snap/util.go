@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -36,9 +35,13 @@ func createFile(path string, data string) {
 	}
 }
 
-func checkIfError(err error) {
+func checkIfError(err error, message string) {
 	if err == nil {
 		return
+	}
+
+	if message != "" {
+		fmt.Println(message)
 	}
 
 	fmt.Printf("\x1b[31;1m%s\x1b[0m\n", fmt.Sprintf("error: %s", err))
@@ -46,40 +49,13 @@ func checkIfError(err error) {
 }
 
 func createDir(dir string) {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		if err := os.Mkdir(dir, os.ModePerm); err != nil {
-			checkIfError(err)
-		}
+	if err := os.Mkdir(dir, os.ModePerm); err != nil {
+		checkIfError(err, "Unable to create dir: "+dir)
 	}
 }
 
-func findExistingConfigs(root string) []string {
-	var files []string
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if filepath.Ext(path) == ".yaml" {
-			files = append(files, path)
-		}
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
-	return files
-}
-
-func deleteMissingConfigs(current []string, existing []string) {
-	for i := range existing {
-		exists := false
-		for _, b := range current {
-			if b == existing[i] {
-				exists = true
-				break
-			}
-		}
-		if exists {
-			i++
-		} else {
-			os.Remove(existing[i])
-		}
-	}
+func recreateDir(dir string) {
+	err := os.RemoveAll(dir)
+	checkIfError(err, "")
+	createDir(dir)
 }

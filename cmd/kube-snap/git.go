@@ -16,16 +16,25 @@ func cloneRepo() (*git.Repository, error) {
 	})
 }
 
+// func checkout(worktree *git.Worktree) error {
+// 	return worktree.Checkout(&git.CheckoutOptions{
+// 		Hash:   plumbing.Hash{},
+// 		Branch: plumbing.NewBranchReferenceName(getValueOf("repo-branch", "")),
+// 		Force:  true,
+// 	})
+// }
+
 func addAll(worktree *git.Worktree) error {
+	// TODO: Fix add all [Maybe maually send the list of files changed]
 	return worktree.AddWithOptions(&git.AddOptions{
 		All:  true,
-		Path: CloneDir,
+		Glob: CloneDir,
 	})
 }
 
 func checkCleanStatus(worktree *git.Worktree) bool {
 	status, err := worktree.Status()
-	checkIfError(err)
+	checkIfError(err, "Unable to find worktree status.")
 	return status.IsClean()
 }
 
