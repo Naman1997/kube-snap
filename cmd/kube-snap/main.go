@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -56,19 +54,6 @@ func main() {
 
 	//Save all namespaces
 	saveNamespaces(clientset, codec)
-
-	// List all files
-	var files []string
-	err = filepath.Walk(CloneDir, func(path string, info os.FileInfo, err error) error {
-		files = append(files, path)
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
-	for _, file := range files {
-		fmt.Println("Found file: " + file)
-	}
 
 	// Add all files
 	fmt.Println()
