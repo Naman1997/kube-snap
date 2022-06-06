@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 
 	"os"
 	// "path/filepath"
@@ -24,8 +23,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 
-	git "github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer/versioning"
 	"k8s.io/client-go/kubernetes"
@@ -33,7 +30,10 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-const Version = "v1"
+const (
+	Version  = "v1"
+	CloneDir = "/repo"
+)
 
 var Codec runtime.Codec
 
@@ -66,33 +66,32 @@ func init() {
 
 func main() {
 
-	/*
-		TODO:
-		- Write files in a specific directory structure
-		- Git push to the same specified branch
-	*/
-
-	// Git clone a repo using creds from a secret
-	_, err := git.PlainClone("./repo/", false, &git.CloneOptions{
-		Auth: &http.BasicAuth{
-			Username: getValueOf("repo-user", "abc123"),
-			Password: getValueOf("repo-pass", ""),
-		},
-		URL:        getValueOf("repo-url", ""),
-		RemoteName: getValueOf("repo-branch", ""),
-		Progress:   os.Stdout,
-	})
-
-	// Remove all non dot files and dirs in the cloned dir
-	files, err := filepath.Glob("./repo/.*")
-	if err != nil {
+	// Create the CloneDir
+	if err := os.Mkdir(CloneDir, os.ModePerm); err != nil {
 		panic(err)
 	}
-	for _, f := range files {
-		if err := os.Remove(f); err != nil {
-			panic(err)
-		}
+
+	// Git clone a repo using creds from a secret
+	repo, err := CloneRepo()
+	if err != nil {
+		fmt.Println("Git Clone Failed!")
+		panic(err)
 	}
+
+	// Generate worktree
+	worktree, err := repo.Worktree()
+	CheckIfError(err)
+
+	// TODO: Figure out how to switch branches using git-go
+	// https://github.com/go-git/go-git/issues/241
+
+	// Checkout provided branch
+	// fmt.Println("Switching to: " + plumbing.NewBranchReferenceName(getValueOf("repo-branch", "")))
+	// err = worktree.Checkout(&git.CheckoutOptions{
+	// 	Create: true,
+	// 	Branch: plumbing.NewBranchReferenceName(getValueOf("repo-branch", "")),
+	// })
+	// CheckIfError(err)
 
 	s := scheme.Scheme
 	serializer := json.NewYAMLSerializer(json.DefaultMetaFactory, s, s)
@@ -121,11 +120,12 @@ func main() {
 		panic(err.Error())
 	}
 	for node_index := range nodes.Items {
-		yaml, err := runtime.Encode(Codec, &nodes.Items[node_index])
+		node := nodes.Items[node_index]
+		yaml, err := runtime.Encode(Codec, &node)
 		if err != nil {
 			panic(err.Error())
 		}
-		fmt.Printf("%+v\n", string(yaml))
+		createFile(CloneDir+"/"+node.GetName(), string(yaml))
 		fmt.Println()
 	}
 
@@ -135,11 +135,26 @@ func main() {
 		panic(err.Error())
 	}
 	for node_index := range namespaces.Items {
-		yaml, err := runtime.Encode(Codec, &namespaces.Items[node_index])
+		namespace := namespaces.Items[node_index]
+		yaml, err := runtime.Encode(Codec, &namespace)
 		if err != nil {
 			panic(err.Error())
 		}
-		fmt.Printf("%+v\n", string(yaml))
+		createFile(CloneDir+"/"+namespace.GetName(), string(yaml))
 		fmt.Println()
 	}
+
+	// Add all files
+	fmt.Println("Executing git add --all.")
+	err = AddAll(worktree)
+	CheckIfError(err)
+
+	// Commit all files
+	fmt.Println("Executing git commit.")
+	err = CommitChanges(worktree)
+	CheckIfError(err)
+
+	// Git push using default options
+	fmt.Println("Executing git push.")
+	Push(repo)
 }
