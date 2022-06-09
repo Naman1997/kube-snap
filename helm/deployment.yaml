@@ -21,6 +21,8 @@ spec:
           - name: git-secrets
             mountPath: "/etc/secrets"
             readOnly: true
+          - name: repo-data
+            mountPath: /repo
         resources:
           requests:
             memory: "64Mi"
@@ -32,3 +34,6 @@ spec:
       - name: git-secrets
         secret:
           secretName: git-secrets
+      - name: repo-data
+        persistentVolumeClaim:
+          claimName: kube-snap-vol-claim

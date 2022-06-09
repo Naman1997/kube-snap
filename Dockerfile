@@ -8,6 +8,6 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -o app .
 
 FROM alpine:latest
-COPY --from=builder /app/app ./
 RUN apk add --no-cache git
+COPY --from=builder /app/app ./
 CMD ["./app"]
