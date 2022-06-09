@@ -6,7 +6,12 @@ import (
 )
 
 func cloneRepo() error {
-	cmd := exec.Command("git", "clone", getValueOf("repo-url"), CloneDir)
+	cmd := exec.Command("git", "clone", getValueOf("repo-url"), ".")
+	return cmd.Run()
+}
+
+func pullOrigin() error {
+	cmd := exec.Command("git", "pull")
 	return cmd.Run()
 }
 
@@ -15,8 +20,8 @@ func setupAuthor() {
 	exec.Command("git", "config", "--global", "user.name", "kube-snap").Run()
 }
 
-func switchBranch() error {
-	cmd := exec.Command("git", "switch", getValueOf("repo-branch"))
+func switchBranch(branch string) error {
+	cmd := exec.Command("git", "switch", branch)
 	return cmd.Run()
 }
 
