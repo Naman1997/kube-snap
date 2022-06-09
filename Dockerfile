@@ -1,4 +1,4 @@
-FROM golang:1.18 as builder
+FROM golang:1.18-alpine as builder
 WORKDIR /app
 COPY cmd/kube-snap/ ./
 RUN go mod download
@@ -7,6 +7,7 @@ RUN go mod download
 # RUN go test -v
 RUN CGO_ENABLED=0 go build -o app .
 
-FROM gcr.io/distroless/static:latest
+FROM alpine:latest
 COPY --from=builder /app/app ./
+RUN apk add --no-cache git
 CMD ["./app"]

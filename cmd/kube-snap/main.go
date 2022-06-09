@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -9,9 +10,9 @@ import (
 
 const (
 	Version      = "v1"
-	CloneDir     = "/repo"
-	nodePath     = CloneDir + "/nodes/"
-	namspacePath = CloneDir + "/namespaces/"
+	CloneDir     = "repo"
+	nodePath     = "nodes/"
+	namspacePath = "namespaces/"
 )
 
 func main() {
@@ -21,22 +22,22 @@ func main() {
 
 	// TODO: Only pull the latest changes if repo exists on disk
 	// Clone the repo
-	repo, err := cloneRepo()
-	fmt.Println()
+	fmt.Println("Executing git clone.")
+	err := cloneRepo()
 	if err != nil {
 		checkIfError(err, "Unable to clone repo.")
 	}
 
-	// Generate worktree
-	worktree, err := repo.Worktree()
-	checkIfError(err, "Unable to generate worktree.")
+	// Change dir to repo
+	err = os.Chdir(CloneDir)
+	checkIfError(err, "Unable to change dir to the cloned repo.")
 
-	// TODO: Figure out how to switch branches using git-go
-	// https://github.com/go-git/go-git/issues/241
+	// Configure git author
+	setupAuthor()
 
 	// Checkout in branch
-	// err = checkout(worktree)
-	// checkIfError(err, "Unable to checkout in branch")
+	err = switchBranch()
+	checkIfError(err, "Unable to switch branch")
 
 	// Create the in-cluster config
 	config, err := rest.InClusterConfig()
@@ -58,21 +59,28 @@ func main() {
 	// Add all files
 	fmt.Println()
 	fmt.Println("Executing git add.")
-	err = addAll(worktree)
+	err = addAll()
 	checkIfError(err, "Unable to execute git add.")
 
-	// Check if worktree is clean
-	fmt.Println("Checking git status.")
-	if checkCleanStatus(worktree) {
-		fmt.Println("Clean worktree. Nothing to commit.")
-	} else {
+	// Check status of changes
+	fmt.Println("Executing git status --porcelain")
+	o, err := status()
+	checkIfError(err, "Unable to execute git status.")
+	fmt.Println(o)
+	if len(o) > 0 {
 		// Commit all files
 		fmt.Println("Executing git commit.")
-		_, err := commitChanges(worktree)
+		err = commitChanges()
 		checkIfError(err, "Unable to execute git commit.")
 
 		// Git push using default options
 		fmt.Println("Executing git push.")
-		push(repo)
+		err = push()
+		checkIfError(err, "Unable to execute git push.")
+
+	} else {
+		// No changes
+		fmt.Println("No diff found! Branch", getValueOf("repo-branch"), "is up to date.")
 	}
+
 }

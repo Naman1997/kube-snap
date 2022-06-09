@@ -14,7 +14,24 @@ import (
 	templatev1 "github.com/openshift/api/template/v1"
 	userv1 "github.com/openshift/api/user/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/runtime/serializer/json"
+	"k8s.io/apimachinery/pkg/runtime/serializer/versioning"
+	"k8s.io/client-go/kubernetes/scheme"
 )
+
+func generateCodec() runtime.Codec {
+	scheme := scheme.Scheme
+	addToScheme(scheme)
+	serializer := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme, scheme)
+	return versioning.NewDefaultingCodecForScheme(
+		scheme,
+		serializer,
+		serializer,
+		schema.GroupVersion{Version: Version},
+		runtime.InternalGroupVersioner,
+	)
+}
 
 func addToScheme(scheme *runtime.Scheme) {
 	appsv1.AddToScheme(scheme)

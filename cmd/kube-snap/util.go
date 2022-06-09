@@ -6,23 +6,14 @@ import (
 	"strings"
 )
 
-func getValueOf(key, fallback string) string {
-	value, err := os.ReadFile("/etc/secrets/" + key)
-	if err != nil {
-		return fallback
-	}
-	return strings.Trim(string(value), "\"")
+func getValueOf(key string) string {
+	value, _ := os.ReadFile("/etc/secrets/" + key)
+	updatedValue := strings.Trim(string(value), "\"")
+	return strings.TrimSuffix(updatedValue, "\n")
 }
 
 func createFile(path string, data string) {
 	path += ".yaml"
-	if _, err := os.Stat(path); err == nil {
-		os.Remove(path)
-		fmt.Println("Writing to file: ", strings.Replace(path, "/repo/", "", 1))
-	} else {
-		fmt.Println("Created new file: ", path)
-	}
-
 	f, err := os.Create(path)
 	if err != nil {
 		panic(err.Error())
