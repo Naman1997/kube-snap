@@ -57,7 +57,6 @@ func main() {
 	saveNamespaces(clientset, codec)
 
 	// Add all files
-	fmt.Println()
 	fmt.Println("Executing git add.")
 	err = addAll()
 	checkIfError(err, "Unable to execute git add.")
