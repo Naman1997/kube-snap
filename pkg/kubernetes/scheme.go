@@ -1,4 +1,4 @@
-package main
+package kubernetes
 
 import (
 	appsv1 "github.com/openshift/api/apps/v1"
@@ -20,20 +20,22 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
-func generateCodec() runtime.Codec {
+const version = "v1"
+
+func GenerateCodec() runtime.Codec {
 	scheme := scheme.Scheme
-	addToScheme(scheme)
+	AddToScheme(scheme)
 	serializer := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme, scheme)
 	return versioning.NewDefaultingCodecForScheme(
 		scheme,
 		serializer,
 		serializer,
-		schema.GroupVersion{Version: Version},
+		schema.GroupVersion{Version: version},
 		runtime.InternalGroupVersioner,
 	)
 }
 
-func addToScheme(scheme *runtime.Scheme) {
+func AddToScheme(scheme *runtime.Scheme) {
 	appsv1.AddToScheme(scheme)
 	authorizationv1.AddToScheme(scheme)
 	buildv1.AddToScheme(scheme)
