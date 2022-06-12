@@ -80,14 +80,12 @@ func main() {
 }
 
 func saveCreatedEvent(obj interface{}) {
-	// Cast the obj as event
 	event := obj.(*corev1.Event)
 	message := "Event Creation Detected: " + event.Reason
 	saveEvent(message, event.Reason+delimiter+event.Message, event)
 }
 
 func saveUpdatedEvent(oldObj interface{}, newObj interface{}) {
-	// Cast the obj as event
 	oldEvent := oldObj.(*corev1.Event)
 	newEvent := newObj.(*corev1.Event)
 	oldMessage := oldEvent.Reason + delimiter + oldEvent.Message
@@ -98,7 +96,6 @@ func saveUpdatedEvent(oldObj interface{}, newObj interface{}) {
 }
 
 func saveDeletedEvent(obj interface{}) {
-	// Cast the obj as event
 	event := obj.(*corev1.Event)
 	message := "Event Delete Detected: " + event.Reason
 	saveEvent(message, event.Reason+delimiter+event.Message, event)
@@ -107,6 +104,8 @@ func saveDeletedEvent(obj interface{}) {
 func saveEvent(message string, description string, event *corev1.Event) {
 	eventReason := event.Reason
 	lastSeenDuration := int(time.Now().Unix() - event.LastTimestamp.Time.Unix())
+
+	// Print warnings and return
 	if isEventBasedSnaps && event.Type == corev1.EventTypeNormal {
 		if isPrintWarnings {
 			utilities.CreateTimedLog(WARNING, "Ignored normal event:", eventReason)
@@ -133,5 +132,5 @@ func saveEvent(message string, description string, event *corev1.Event) {
 	utilities.CreateTimedLog("[CONFIG] print_warnings:", strconv.FormatBool(isPrintWarnings))
 
 	// Take a snapshot
-	TakeSnap(clientset, codec, message, description)
+	takeSnap(clientset, codec, message, description)
 }

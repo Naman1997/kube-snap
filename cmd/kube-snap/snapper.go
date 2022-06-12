@@ -45,7 +45,7 @@ const (
 	secretsDir  = "/etc/secrets/"
 )
 
-func TakeSnap(clientset *kubernetes.Clientset, codec runtime.Codec, reason string, description string) {
+func takeSnap(clientset *kubernetes.Clientset, codec runtime.Codec, reason string, description string) {
 
 	// Setup workdir
 	setupGitRepo()
