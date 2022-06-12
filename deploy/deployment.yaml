@@ -19,7 +19,10 @@ spec:
         image: namanarora/kube-snap:latest
         volumeMounts:
           - name: git-secrets
-            mountPath: "/etc/secrets"
+            mountPath: /etc/secrets
+            readOnly: true
+          - name: config-volume
+            mountPath: /etc/configs
             readOnly: true
           - name: repo-data
             mountPath: /repo
@@ -37,3 +40,6 @@ spec:
       - name: repo-data
         persistentVolumeClaim:
           claimName: kube-snap-vol-claim
+      - name: config-volume
+        configMap:
+          name: kube-snap-config

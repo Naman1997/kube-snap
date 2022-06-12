@@ -34,8 +34,8 @@ func Status() (string, error) {
 	return string(o), err
 }
 
-func CommitChanges(message string) error {
-	cmd := exec.Command("git", "commit", "-m", message)
+func CommitChanges(message string, description string) error {
+	cmd := exec.Command("git", "commit", "-m", message, "-m", description)
 	return cmd.Run()
 }
 

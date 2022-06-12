@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"math"
+	"strconv"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -9,13 +12,33 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
+	"kube-snap.io/kube-snap/internal/config"
 	"kube-snap.io/kube-snap/internal/utilities"
 	k8s "kube-snap.io/kube-snap/pkg/kubernetes"
 )
 
 var (
+	// Config vars
+	isEventBasedSnaps = config.FetchIsEventBasedSnaps()
+	resyncDuration    = config.FetchResyncDuration()
+	reasonRegex       = config.FetchReasonRegex()
+	isPrintWarnings   = config.FetchIsPrintWarnings()
+	lastSeenThreshold = config.FetchLastSeenThreshold()
+
+	// Kuberenetes vars
 	clientset *kubernetes.Clientset
 	codec     = k8s.GenerateCodec()
+)
+
+const (
+	// K8s related error messages
+	KUBE_CONFIG_FAILED     = "Unable to generate in-cluster config."
+	KUBE_CLIENT_GEN_FAILED = "Unable to generate clientset."
+	CACHE_SYNC_TIMEOUT     = "timed out waiting for caches to sync"
+
+	// Other constants
+	delimiter = ": "
+	WARNING   = "[WARNING]"
 )
 
 func main() {
@@ -29,7 +52,7 @@ func main() {
 	utilities.CheckIfError(err, KUBE_CLIENT_GEN_FAILED)
 
 	// Get resource version for watching events
-	factory := informers.NewSharedInformerFactory(clientset, 0)
+	factory := informers.NewSharedInformerFactory(clientset, time.Duration(int(math.Pow10(9))*resyncDuration))
 
 	// Get the informer for the right resource
 	informer := factory.Core().V1().Events().Informer()
@@ -43,7 +66,7 @@ func main() {
 
 	// Trigger custom logic on addition on new event
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc:    saveEvent,
+		AddFunc:    saveCreatedEvent,
 		UpdateFunc: saveUpdatedEvent,
 		DeleteFunc: saveDeletedEvent,
 	})
@@ -56,11 +79,11 @@ func main() {
 	<-stopper
 }
 
-func saveEvent(obj interface{}) {
+func saveCreatedEvent(obj interface{}) {
 	// Cast the obj as event
 	event := obj.(*corev1.Event)
-	message := event.Reason + delimiter + event.Message
-	TakeSnap(clientset, codec, message)
+	message := "Event Creation Detected: " + event.Reason
+	saveEvent(message, event.Reason+delimiter+event.Message, event)
 }
 
 func saveUpdatedEvent(oldObj interface{}, newObj interface{}) {
@@ -68,14 +91,47 @@ func saveUpdatedEvent(oldObj interface{}, newObj interface{}) {
 	oldEvent := oldObj.(*corev1.Event)
 	newEvent := newObj.(*corev1.Event)
 	oldMessage := oldEvent.Reason + delimiter + oldEvent.Message
-	newReason := newEvent.Reason + delimiter + newEvent.Message
-	reason := "Event Update Detected: " + oldMessage + " to " + newReason
-	TakeSnap(clientset, codec, reason)
+	newMessage := newEvent.Reason + delimiter + newEvent.Message
+	message := "Event Update Detected: " + oldEvent.Reason + " => " + newEvent.Reason
+	description := oldMessage + " => " + newMessage
+	saveEvent(message, description, newEvent)
 }
 
 func saveDeletedEvent(obj interface{}) {
 	// Cast the obj as event
 	event := obj.(*corev1.Event)
-	message := "Event Delete Detected: " + event.Reason + delimiter + event.Message
-	TakeSnap(clientset, codec, message)
+	message := "Event Delete Detected: " + event.Reason
+	saveEvent(message, event.Reason+delimiter+event.Message, event)
+}
+
+func saveEvent(message string, description string, event *corev1.Event) {
+	eventReason := event.Reason
+	lastSeenDuration := int(time.Now().Unix() - event.LastTimestamp.Time.Unix())
+	if isEventBasedSnaps && event.Type == corev1.EventTypeNormal {
+		if isPrintWarnings {
+			utilities.CreateTimedLog(WARNING, "Ignored normal event:", eventReason)
+		}
+		return
+	} else if !reasonRegex.MatchString(eventReason) {
+		if isPrintWarnings {
+			utilities.CreateTimedLog(WARNING, "Ignored event:", eventReason, ". Regex match failed.")
+		}
+		return
+	} else if lastSeenDuration > lastSeenThreshold {
+		if isPrintWarnings {
+			utilities.CreateTimedLog(WARNING, "Ignored event:", eventReason, ". Last seen duration", fmt.Sprint(lastSeenDuration), "was greater than threshold.")
+		}
+		return
+	}
+
+	// Print settings
+	fmt.Println()
+	utilities.CreateTimedLog(INFO+"Detected Matching Event:", eventReason, event.Message)
+	utilities.CreateTimedLog("[CONFIG] event_based_snaps:", strconv.FormatBool(isEventBasedSnaps))
+	utilities.CreateTimedLog("[CONFIG] resync_duration:", fmt.Sprint(resyncDuration))
+	utilities.CreateTimedLog("[CONFIG] reason_regex:", reasonRegex.String())
+	utilities.CreateTimedLog("[CONFIG] print_warnings:", strconv.FormatBool(isPrintWarnings))
+
+	// Take a snapshot
+	TakeSnap(clientset, codec, message, description)
 }

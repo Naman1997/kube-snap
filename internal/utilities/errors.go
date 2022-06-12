@@ -1,7 +1,6 @@
 package utilities
 
 import (
-	"fmt"
 	"log"
 )
 
@@ -11,7 +10,7 @@ func CheckIfError(err error, message string) {
 	}
 
 	if message != "" {
-		fmt.Println("[ERROR] ", message)
+		CreateTimedLog("[ERROR]", message)
 	}
 
 	log.Fatal(err)
