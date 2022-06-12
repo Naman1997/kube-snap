@@ -2,17 +2,20 @@ package main
 
 const (
 	// Common constants
-	cloneDir    = "repo"
+	delimiter   = ": "
+	cloneDir    = "/repo"
 	gitSubDir   = ".git"
 	authorName  = "kube-snap"
 	authorEmail = "kubesnap@kubesnap.com"
 
 	// K8s related error messages
-	K8S_CONFIG_FAILED     = "Unable to generate in-cluster config."
-	K8s_CLIENT_GEN_FAILED = "Unable to generate clientset."
+	KUBE_CONFIG_FAILED      = "Unable to generate in-cluster config."
+	KUBE_CLIENT_GEN_FAILED  = "Unable to generate clientset."
+	KUBE_WATCHER_GET_FAILED = "Unable to create an event watcher."
+	CACHE_SYNC_TIMEOUT      = "timed out waiting for caches to sync"
 
 	// Filesystem related error messages
-	CLONE_DIR_NOT_DETECTED = "Clone dir not detected. PV not mounted?"
+	CLONE_DIR_NOT_DETECTED = "Clone dir not detected. [PV not mounted?]"
 	CHDIR_FAILED           = "Unable to change dir to the cloned repo."
 
 	// Git related error messages

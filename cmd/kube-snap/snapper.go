@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
@@ -12,7 +11,7 @@ import (
 	k8s "kube-snap.io/kube-snap/pkg/kubernetes"
 )
 
-func TakeSnap(clientset *kubernetes.Clientset, codec runtime.Codec) {
+func TakeSnap(clientset *kubernetes.Clientset, codec runtime.Codec, reason string) {
 
 	// Setup workdir
 	setupGitRepo()
@@ -32,7 +31,7 @@ func TakeSnap(clientset *kubernetes.Clientset, codec runtime.Codec) {
 	fmt.Print(o)
 	if len(o) > 0 {
 		// Commit all files
-		utilities.CheckIfError(git.CommitChanges("Snapshot taken on "+time.Now().UTC().String()), GIT_COMMIT_FAILED)
+		utilities.CheckIfError(git.CommitChanges(reason), GIT_COMMIT_FAILED)
 		fmt.Println(GIT_COMMIT_PASSED)
 
 		// Git push using default options
