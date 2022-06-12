@@ -1,2 +1,2 @@
 rebuild.sh
-helm/secret.yaml
+deploy/secret.yaml
