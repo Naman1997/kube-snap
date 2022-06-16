@@ -1,18 +1,18 @@
 package kubernetes
 
 import (
-	appsv1 "github.com/openshift/api/apps/v1"
-	authorizationv1 "github.com/openshift/api/authorization/v1"
-	buildv1 "github.com/openshift/api/build/v1"
-	imagev1 "github.com/openshift/api/image/v1"
-	networkv1 "github.com/openshift/api/network/v1"
-	oauthv1 "github.com/openshift/api/oauth/v1"
-	projectv1 "github.com/openshift/api/project/v1"
-	quotav1 "github.com/openshift/api/quota/v1"
-	routev1 "github.com/openshift/api/route/v1"
-	securityv1 "github.com/openshift/api/security/v1"
-	templatev1 "github.com/openshift/api/template/v1"
-	userv1 "github.com/openshift/api/user/v1"
+	// appsv1 "github.com/openshift/api/apps/v1"
+	// authorizationv1 "github.com/openshift/api/authorization/v1"
+	// buildv1 "github.com/openshift/api/build/v1"
+	// imagev1 "github.com/openshift/api/image/v1"
+	// networkv1 "github.com/openshift/api/network/v1"
+	// oauthv1 "github.com/openshift/api/oauth/v1"
+	// projectv1 "github.com/openshift/api/project/v1"
+	// quotav1 "github.com/openshift/api/quota/v1"
+	// routev1 "github.com/openshift/api/route/v1"
+	// securityv1 "github.com/openshift/api/security/v1"
+	// templatev1 "github.com/openshift/api/template/v1"
+	// userv1 "github.com/openshift/api/user/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
@@ -42,6 +42,7 @@ func GenerateSerializer() (*runtime.Scheme, *json.Serializer) {
 }
 
 // https://miminar.fedorapeople.org/_preview/openshift-enterprise/registry-redeploy/go_client/serializing_and_deserializing.html
+/*
 func AddToScheme(scheme *runtime.Scheme) {
 	appsv1.AddToScheme(scheme)
 	authorizationv1.AddToScheme(scheme)
@@ -68,3 +69,4 @@ func AddToScheme(scheme *runtime.Scheme) {
 	templatev1.AddToSchemeInCoreGroup(scheme)
 	userv1.AddToSchemeInCoreGroup(scheme)
 }
+*/
