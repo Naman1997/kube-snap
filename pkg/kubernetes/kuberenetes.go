@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"sync"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -33,7 +34,8 @@ const (
 	rolePath                  = "roles/"
 )
 
-func SaveNodes(clientset *kubernetes.Clientset, codec runtime.Codec) {
+func SaveNodes(clientset *kubernetes.Clientset, codec runtime.Codec, wg *sync.WaitGroup) {
+	defer wg.Done()
 	kubeObject, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	utilities.CheckIfError(err, "Unable to iterate nodes using the current config.")
 	utilities.RecreateDir(nodePath)
@@ -47,7 +49,8 @@ func SaveNodes(clientset *kubernetes.Clientset, codec runtime.Codec) {
 	}
 }
 
-func SaveStorageClasses(clientset *kubernetes.Clientset, codec runtime.Codec) {
+func SaveStorageClasses(clientset *kubernetes.Clientset, codec runtime.Codec, wg *sync.WaitGroup) {
+	defer wg.Done()
 	kubeObject, err := clientset.StorageV1().StorageClasses().List(context.TODO(), metav1.ListOptions{})
 	utilities.CheckIfError(err, "Unable to iterate storageclasses using the current config.")
 	utilities.RecreateDir(storageclassPath)
@@ -61,7 +64,8 @@ func SaveStorageClasses(clientset *kubernetes.Clientset, codec runtime.Codec) {
 	}
 }
 
-func SaveClusterRoleBindings(clientset *kubernetes.Clientset, codec runtime.Codec) {
+func SaveClusterRoleBindings(clientset *kubernetes.Clientset, codec runtime.Codec, wg *sync.WaitGroup) {
+	defer wg.Done()
 	kubeObject, err := clientset.RbacV1().ClusterRoleBindings().List(context.TODO(), metav1.ListOptions{})
 	utilities.CheckIfError(err, "Unable to iterate clusterrolebindings using the current config.")
 	utilities.RecreateDir(clusterrolebindingPath)
@@ -75,7 +79,8 @@ func SaveClusterRoleBindings(clientset *kubernetes.Clientset, codec runtime.Code
 	}
 }
 
-func SaveClusterRoles(clientset *kubernetes.Clientset, codec runtime.Codec) {
+func SaveClusterRoles(clientset *kubernetes.Clientset, codec runtime.Codec, wg *sync.WaitGroup) {
+	defer wg.Done()
 	kubeObject, err := clientset.RbacV1().ClusterRoles().List(context.TODO(), metav1.ListOptions{})
 	utilities.CheckIfError(err, "Unable to iterate clusterroles using the current config.")
 	utilities.RecreateDir(clusterrolePath)
@@ -89,7 +94,8 @@ func SaveClusterRoles(clientset *kubernetes.Clientset, codec runtime.Codec) {
 	}
 }
 
-func SavePersistentVolumes(clientset *kubernetes.Clientset, codec runtime.Codec) {
+func SavePersistentVolumes(clientset *kubernetes.Clientset, codec runtime.Codec, wg *sync.WaitGroup) {
+	defer wg.Done()
 	kubeObject, err := clientset.CoreV1().PersistentVolumes().List(context.TODO(), metav1.ListOptions{})
 	utilities.CheckIfError(err, "Unable to iterate persistent volumes using the current config.")
 	utilities.RecreateDir(persistentVolumePath)

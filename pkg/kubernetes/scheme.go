@@ -35,11 +35,13 @@ func GenerateCodec(scheme *runtime.Scheme, serializer *json.Serializer, group st
 
 func GenerateSerializer() (*runtime.Scheme, *json.Serializer) {
 	scheme := scheme.Scheme
-	AddToScheme(scheme)
+	// TODO: Save openshift related objects when a cluster is available for testing
+	// AddToScheme(scheme)
 	serializer := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme, scheme)
 	return scheme, serializer
 }
 
+// https://miminar.fedorapeople.org/_preview/openshift-enterprise/registry-redeploy/go_client/serializing_and_deserializing.html
 func AddToScheme(scheme *runtime.Scheme) {
 	appsv1.AddToScheme(scheme)
 	authorizationv1.AddToScheme(scheme)
