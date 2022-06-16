@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/client-go/kubernetes"
 	"kube-snap.io/kube-snap/internal/git"
 	"kube-snap.io/kube-snap/internal/utilities"
@@ -45,7 +46,7 @@ const (
 	secretsDir  = "/etc/secrets/"
 )
 
-func takeSnap(clientset *kubernetes.Clientset, codec runtime.Codec, reason string, description string) {
+func takeSnap(clientset *kubernetes.Clientset, scheme *runtime.Scheme, serializer *json.Serializer, reason string, description string) {
 
 	// Setup workdir
 	// Make sure clone dir exists
@@ -76,7 +77,7 @@ func takeSnap(clientset *kubernetes.Clientset, codec runtime.Codec, reason strin
 	}
 
 	// Save k8s objects
-	saveKuberentesObjects(clientset, codec)
+	saveKuberentesObjects(clientset, scheme, serializer)
 
 	// Add all files
 	err = git.AddAll()
@@ -104,7 +105,86 @@ func takeSnap(clientset *kubernetes.Clientset, codec runtime.Codec, reason strin
 
 }
 
-func saveKuberentesObjects(clientset *kubernetes.Clientset, codec runtime.Codec) {
-	k8s.SaveNodes(clientset, codec)
-	k8s.SaveNamespaces(clientset, codec)
+func saveKuberentesObjects(clientset *kubernetes.Clientset, scheme *runtime.Scheme, serializer *json.Serializer) {
+
+	codecStorageV1 := k8s.GenerateCodec(scheme, serializer, "storage.k8s.io", "v1")
+	codecRbacV1 := k8s.GenerateCodec(scheme, serializer, "rbac.authorization.k8s.io", "v1")
+	codecAppsV1 := k8s.GenerateCodec(scheme, serializer, "apps", "v1")
+	codecBatchV1 := k8s.GenerateCodec(scheme, serializer, "batch", "v1")
+	codecNetworkV1 := k8s.GenerateCodec(scheme, serializer, "networking.k8s.io", "v1")
+	codecV1 := k8s.GenerateCodec(scheme, serializer, "", "v1")
+
+	// storage.k8s.io/v1
+	saveStorageObjects(clientset, codecStorageV1)
+
+	// rbac.authorization.k8s.io/v1
+	saveRbacObjects(clientset, codecRbacV1)
+
+	// v1
+	namespaces := saveV1Objects(clientset, codecV1)
+
+	// Namespace Objects
+	for _, namespace := range namespaces {
+
+		// v1
+		saveNamepacedV1Objects(clientset, codecV1, namespace)
+
+		// apps/v1
+		saveNamepacedAppsV1Objects(clientset, codecAppsV1, namespace)
+
+		// batch/v1
+		saveNamepacedBatchV1Objects(clientset, codecBatchV1, namespace)
+
+		// networking.k8s.io/v1
+		saveNamepacedNetworkingV1Objects(clientset, codecNetworkV1, namespace)
+
+		// rbac.authorization.k8s.io/v1
+		saveNamepacedRbacV1Objects(clientset, codecRbacV1, namespace)
+	}
+}
+
+func saveStorageObjects(clientset *kubernetes.Clientset, codecStorageV1 runtime.Codec) {
+	k8s.SaveStorageClasses(clientset, codecStorageV1)
+}
+
+func saveRbacObjects(clientset *kubernetes.Clientset, codecRbacV1 runtime.Codec) {
+	k8s.SaveClusterRoleBindings(clientset, codecRbacV1)
+	k8s.SaveClusterRoles(clientset, codecRbacV1)
+}
+
+func saveV1Objects(clientset *kubernetes.Clientset, codecV1 runtime.Codec) []string {
+	k8s.SavePersistentVolumes(clientset, codecV1)
+	k8s.SaveNodes(clientset, codecV1)
+	namespaces := k8s.SaveNamespaces(clientset, codecV1)
+	return namespaces
+}
+
+func saveNamepacedV1Objects(clientset *kubernetes.Clientset, codecV1 runtime.Codec, namespace string) {
+	k8s.SaveConfigMaps(clientset, codecV1, namespace)
+	k8s.SavePersistentVolumeClaims(clientset, codecV1, namespace)
+	k8s.SavePods(clientset, codecV1, namespace)
+	k8s.SaveSecrets(clientset, codecV1, namespace)
+	k8s.SaveServiceAccounts(clientset, codecV1, namespace)
+	k8s.SaveServices(clientset, codecV1, namespace)
+}
+
+func saveNamepacedAppsV1Objects(clientset *kubernetes.Clientset, codecAppsV1 runtime.Codec, namespace string) {
+	k8s.SaveDaemonsets(clientset, codecAppsV1, namespace)
+	k8s.SaveDeployments(clientset, codecAppsV1, namespace)
+	k8s.SaveReplicaSets(clientset, codecAppsV1, namespace)
+	k8s.SaveStatefulSets(clientset, codecAppsV1, namespace)
+}
+
+func saveNamepacedBatchV1Objects(clientset *kubernetes.Clientset, codecBatchV1 runtime.Codec, namespace string) {
+	k8s.SaveCronJobs(clientset, codecBatchV1, namespace)
+	k8s.SaveJobs(clientset, codecBatchV1, namespace)
+}
+
+func saveNamepacedNetworkingV1Objects(clientset *kubernetes.Clientset, codecNetworkV1 runtime.Codec, namespace string) {
+	k8s.SaveIngresses(clientset, codecNetworkV1, namespace)
+}
+
+func saveNamepacedRbacV1Objects(clientset *kubernetes.Clientset, codecRbacV1 runtime.Codec, namespace string) {
+	k8s.SaveRoleBindings(clientset, codecRbacV1, namespace)
+	k8s.SaveRoles(clientset, codecRbacV1, namespace)
 }

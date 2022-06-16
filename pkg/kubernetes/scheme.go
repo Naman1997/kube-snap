@@ -20,19 +20,24 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
-const version = "v1"
-
-func GenerateCodec() runtime.Codec {
-	scheme := scheme.Scheme
-	AddToScheme(scheme)
-	serializer := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme, scheme)
+func GenerateCodec(scheme *runtime.Scheme, serializer *json.Serializer, group string, version string) runtime.Codec {
 	return versioning.NewDefaultingCodecForScheme(
 		scheme,
 		serializer,
 		serializer,
-		schema.GroupVersion{Version: version},
+		schema.GroupVersion{
+			Group:   group,
+			Version: version,
+		},
 		runtime.InternalGroupVersioner,
 	)
+}
+
+func GenerateSerializer() (*runtime.Scheme, *json.Serializer) {
+	scheme := scheme.Scheme
+	AddToScheme(scheme)
+	serializer := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme, scheme)
+	return scheme, serializer
 }
 
 func AddToScheme(scheme *runtime.Scheme) {

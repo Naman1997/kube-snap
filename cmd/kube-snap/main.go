@@ -26,8 +26,8 @@ var (
 	lastSeenThreshold = config.FetchLastSeenThreshold()
 
 	// Kuberenetes vars
-	clientset *kubernetes.Clientset
-	codec     = k8s.GenerateCodec()
+	clientset          *kubernetes.Clientset
+	scheme, serializer = k8s.GenerateSerializer()
 )
 
 const (
@@ -132,5 +132,5 @@ func saveEvent(message string, description string, event *corev1.Event) {
 	utilities.CreateTimedLog("[CONFIG] print_warnings:", strconv.FormatBool(isPrintWarnings))
 
 	// Take a snapshot
-	takeSnap(clientset, codec, message, description)
+	takeSnap(clientset, scheme, serializer, message, description)
 }
