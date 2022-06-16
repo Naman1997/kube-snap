@@ -3,7 +3,6 @@ module kube-snap.io/kube-snap
 go 1.18
 
 require (
-	github.com/openshift/api v3.9.0+incompatible
 	k8s.io/api v0.24.1
 	k8s.io/apimachinery v0.24.1
 	k8s.io/client-go v0.24.1

@@ -26,8 +26,8 @@ var (
 	lastSeenThreshold = config.FetchLastSeenThreshold()
 
 	// Kuberenetes vars
-	clientset *kubernetes.Clientset
-	codec     = k8s.GenerateCodec()
+	clientset          *kubernetes.Clientset
+	scheme, serializer = k8s.GenerateSerializer()
 )
 
 const (
@@ -103,7 +103,7 @@ func saveDeletedEvent(obj interface{}) {
 
 func saveEvent(message string, description string, event *corev1.Event) {
 	eventReason := event.Reason
-	lastSeenDuration := int(time.Now().Unix() - event.LastTimestamp.Time.Unix())
+	lastSeenDuration := time.Now().Unix() - event.LastTimestamp.Time.Unix()
 
 	// Print warnings and return
 	if isEventBasedSnaps && event.Type == corev1.EventTypeNormal {
@@ -116,7 +116,7 @@ func saveEvent(message string, description string, event *corev1.Event) {
 			utilities.CreateTimedLog(WARNING, "Ignored event:", eventReason, ". Regex match failed.")
 		}
 		return
-	} else if lastSeenDuration > lastSeenThreshold {
+	} else if lastSeenDuration > int64(lastSeenThreshold) {
 		if isPrintWarnings {
 			utilities.CreateTimedLog(WARNING, "Ignored event:", eventReason, ". Last seen duration", fmt.Sprint(lastSeenDuration), "was greater than threshold.")
 		}
@@ -132,5 +132,5 @@ func saveEvent(message string, description string, event *corev1.Event) {
 	utilities.CreateTimedLog("[CONFIG] print_warnings:", strconv.FormatBool(isPrintWarnings))
 
 	// Take a snapshot
-	takeSnap(clientset, codec, message, description)
+	takeSnap(clientset, scheme, serializer, message, description)
 }

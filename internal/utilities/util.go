@@ -28,7 +28,8 @@ func CreateFile(path string, data string) {
 }
 
 func CreateDir(dir string) {
-	if err := os.Mkdir(dir, os.ModePerm); err != nil {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err := os.Mkdir(dir, os.ModePerm)
 		CheckIfError(err, "Unable to create dir: "+dir)
 	}
 }
