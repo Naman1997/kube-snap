@@ -48,38 +48,6 @@ const (
 func takeSnap(clientset *kubernetes.Clientset, codec runtime.Codec, reason string, description string) {
 
 	// Setup workdir
-	setupGitRepo()
-
-	// Save k8s objects
-	saveKuberentesObjects(clientset, codec)
-
-	// Add all files
-	err := git.AddAll()
-	utilities.CheckIfError(err, GIT_ADD_ALL_FAILED)
-	utilities.CreateTimedLog(GIT_ADD_ALL_PASSED)
-
-	// Check status of changes
-	o, err := git.Status()
-	utilities.CheckIfError(err, GIT_STATUS_FAILED)
-	utilities.CreateTimedLog(GIT_STATUS_PASSED)
-	if len(o) > 0 {
-		fmt.Print("["+time.Now().UTC().String()+"]", INFO+o)
-		// Commit all files
-		utilities.CheckIfError(git.CommitChanges(reason, description), GIT_COMMIT_FAILED)
-		utilities.CreateTimedLog(GIT_COMMIT_PASSED)
-
-		// Git push using default options
-		utilities.CheckIfError(git.Push(), GIT_PUSH_FAILED)
-		utilities.CreateTimedLog(GIT_PUSH_PASSED)
-
-	} else {
-		// No changes
-		utilities.CreateTimedLog(GIT_NO_DIFF_FOUND)
-	}
-
-}
-
-func setupGitRepo() {
 	// Make sure clone dir exists
 	_, err := os.Stat(cloneDir)
 	utilities.CheckIfError(err, CLONE_DIR_NOT_DETECTED)
@@ -106,6 +74,34 @@ func setupGitRepo() {
 		utilities.CreateTimedLog(GIT_SWITCH_PASSED)
 		utilities.CheckIfError(git.SwitchBranch(branch), GIT_SWITCH_FAILED)
 	}
+
+	// Save k8s objects
+	saveKuberentesObjects(clientset, codec)
+
+	// Add all files
+	err = git.AddAll()
+	utilities.CheckIfError(err, GIT_ADD_ALL_FAILED)
+	utilities.CreateTimedLog(GIT_ADD_ALL_PASSED)
+
+	// Check status of changes
+	o, err := git.Status()
+	utilities.CheckIfError(err, GIT_STATUS_FAILED)
+	utilities.CreateTimedLog(GIT_STATUS_PASSED)
+	if len(o) > 0 {
+		fmt.Print("["+time.Now().UTC().String()+"]", INFO+o)
+		// Commit all files
+		utilities.CheckIfError(git.CommitChanges(reason, description), GIT_COMMIT_FAILED)
+		utilities.CreateTimedLog(GIT_COMMIT_PASSED)
+
+		// Git push using default options
+		utilities.CheckIfError(git.Push(), GIT_PUSH_FAILED)
+		utilities.CreateTimedLog(GIT_PUSH_PASSED)
+
+	} else {
+		// No changes
+		utilities.CreateTimedLog(GIT_NO_DIFF_FOUND)
+	}
+
 }
 
 func saveKuberentesObjects(clientset *kubernetes.Clientset, codec runtime.Codec) {
