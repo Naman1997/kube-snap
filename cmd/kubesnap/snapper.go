@@ -9,9 +9,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/client-go/kubernetes"
-	"kube-snap.io/kube-snap/internal/git"
-	"kube-snap.io/kube-snap/internal/utilities"
-	k8s "kube-snap.io/kube-snap/pkg/kubernetes"
+	"kubesnap.io/kubesnap/internal/git"
+	"kubesnap.io/kubesnap/internal/utilities"
+	k8s "kubesnap.io/kubesnap/pkg/kubernetes"
 )
 
 const (
@@ -38,11 +38,12 @@ const (
 	GIT_COMMIT_PASSED  = INFO + "Executing git commit."
 	GIT_PUSH_PASSED    = INFO + "Executing git push."
 	GIT_NO_DIFF_FOUND  = INFO + "No diff found! Branch is up to date."
+	GIT_PUSH_COMPLETED = INFO + "Created new snap!"
 
 	// Other constants
 	cloneDir    = "/repo"
 	gitSubDir   = ".git"
-	authorName  = "kube-snap"
+	authorName  = "kubesnap"
 	authorEmail = "kubesnap@kubesnap.com"
 	secretsDir  = "/etc/secrets/"
 )
@@ -90,7 +91,7 @@ func takeSnap(clientset *kubernetes.Clientset, scheme *runtime.Scheme, serialize
 	utilities.CheckIfError(err, GIT_STATUS_FAILED)
 	utilities.CreateTimedLog(GIT_STATUS_PASSED)
 	if len(o) > 0 {
-		fmt.Print("["+time.Now().UTC().String()+"]", INFO+o)
+		fmt.Print("["+time.Now().UTC().Format(time.UnixDate)+"]", INFO+o)
 		// Commit all files
 		utilities.CheckIfError(git.CommitChanges(reason, description), GIT_COMMIT_FAILED)
 		utilities.CreateTimedLog(GIT_COMMIT_PASSED)
@@ -98,7 +99,7 @@ func takeSnap(clientset *kubernetes.Clientset, scheme *runtime.Scheme, serialize
 		// Git push using default options
 		utilities.CheckIfError(git.Push(), GIT_PUSH_FAILED)
 		utilities.CreateTimedLog(GIT_PUSH_PASSED)
-
+		utilities.CreateTimedLog(INFO + GIT_PUSH_COMPLETED)
 	} else {
 		// No changes
 		utilities.CreateTimedLog(GIT_NO_DIFF_FOUND)

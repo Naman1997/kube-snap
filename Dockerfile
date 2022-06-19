@@ -8,7 +8,7 @@ RUN go mod download
 # RUN go get -d -v ./...
 # RUN go vet -v
 # RUN go test -v
-RUN CGO_ENABLED=0 go build -o app ./cmd/kube-snap
+RUN CGO_ENABLED=0 go build -o app ./cmd/kubesnap
 
 FROM alpine:latest
 RUN apk add --no-cache git

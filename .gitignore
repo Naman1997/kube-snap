@@ -1,2 +1,2 @@
 rebuild.sh
-deploy/secret.yaml
+deploy/values-test.yaml

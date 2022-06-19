@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kube-snap
-  namespace: kube-snap
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
       matchLabels:
-        name: kube-snap
+        name: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        name: kube-snap
+        name: {{ .Release.Name }}
     spec:
-      serviceAccountName: kube-snap-sa
+      serviceAccountName: {{ .Release.Name }}-sa
       containers:
-      - name: kube-snap
-        image: namanarora/kube-snap:latest
+      - name: {{ .Release.Name }}
+        image: namanarora/kubesnap:{{ .Values.image.tag }}
         volumeMounts:
           - name: git-secrets
             mountPath: /etc/secrets
@@ -39,7 +39,7 @@ spec:
           secretName: git-secrets
       - name: repo-data
         persistentVolumeClaim:
-          claimName: kube-snap-vol-claim
+          claimName: {{ .Release.Name }}-vol-claim
       - name: config-volume
         configMap:
-          name: kube-snap-config
+          name: {{ .Release.Name }}-config

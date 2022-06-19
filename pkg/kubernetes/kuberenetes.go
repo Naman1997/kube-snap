@@ -7,7 +7,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
-	"kube-snap.io/kube-snap/internal/utilities"
+	"kubesnap.io/kubesnap/internal/utilities"
 )
 
 const (

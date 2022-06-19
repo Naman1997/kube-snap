@@ -41,5 +41,5 @@ func RecreateDir(dir string) {
 }
 
 func CreateTimedLog(message ...string) {
-	fmt.Println("[" + time.Now().UTC().String() + "]" + strings.Join(message, " "))
+	fmt.Println("[" + time.Now().UTC().Format(time.UnixDate) + "]" + strings.Join(message, " "))
 }
