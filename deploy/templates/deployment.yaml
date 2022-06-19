@@ -28,11 +28,11 @@ spec:
             mountPath: /repo
         resources:
           requests:
-            memory: "64Mi"
-            cpu: "250m"
+            memory: {{ .Values.requests.memory | quote }}
+            cpu: {{ .Values.requests.cpu | quote }}
           limits:
-            memory: "1024Mi"
-            cpu: "2000m"
+            memory: {{ .Values.limits.memory | quote }}
+            cpu: {{ .Values.limits.cpu | quote }}
       volumes:
       - name: git-secrets
         secret:
