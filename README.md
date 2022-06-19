@@ -1,4 +1,6 @@
 # kubesnap
+[![Docker Image CI](https://github.com/Naman1997/kubesnap/actions/workflows/docker-image.yml/badge.svg)](https://github.com/Naman1997/kubesnap/actions/workflows/docker-image.yml)
+[![Go](https://github.com/Naman1997/kubesnap/actions/workflows/go.yml/badge.svg)](https://github.com/Naman1997/kubesnap/actions/workflows/go.yml)
 
 kubesnap is a tool for observing events in kuberenetes and reacting to them in an automated manner.
 
