@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"kube-snap.io/kube-snap/internal/utilities"
+	"kubesnap.io/kubesnap/internal/utilities"
 )
 
 const (

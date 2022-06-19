@@ -1,0 +1,28 @@
+repo:
+  # Formatted URL for cloning your repository.
+  # Format: https://USERNAME:TOKEN@github.com/USERNAME/REPO.git
+  url: ""
+  branch: ""
+
+settings:
+  # event_based_snaps defines when a snapshot should be taken.
+  # New commits are made when a new change is detected.
+  # Possible values: 
+  # true - Take a snapshot whenever an event with type != "Normal" is detected. [Equivalent to : kubectl get events --field-selector type!=Normal ]
+  # false - Take a snapshot every time the watcher resyncs irrespective of event type. [Equivalent to : kubectl get events -w]
+  event_based_snaps: true
+  # Ignores events that were created before last_seen_duration seconds
+  last_seen_duration: 100
+  # Enables/Disables warnings about ignored events
+  print_warnings: false
+  # kubesnap only processes events whose reason string matches reason_regex.
+  # Processes all events by default 
+  # https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/events/event.go
+  reason_regex: ""
+  # resync_duration defines the retry dutation for the kubernetes watcher.
+  # Default is 0 seconds, but can be increased to save resources. Increasing this might result in missed events.
+  # Make sure this is less than last_seen_duration
+  resync_duration: 0
+
+image:
+  tag: v0.1

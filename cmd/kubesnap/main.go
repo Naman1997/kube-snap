@@ -12,9 +12,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-	"kube-snap.io/kube-snap/internal/config"
-	"kube-snap.io/kube-snap/internal/utilities"
-	k8s "kube-snap.io/kube-snap/pkg/kubernetes"
+	"kubesnap.io/kubesnap/internal/config"
+	"kubesnap.io/kubesnap/internal/utilities"
+	k8s "kubesnap.io/kubesnap/pkg/kubernetes"
 )
 
 var (

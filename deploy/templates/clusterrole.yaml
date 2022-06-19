@@ -1,0 +1,40 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Release.Name }}-cr
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs: ["get", "list", "watch"]
+- apiGroups:
+  - "storage.k8s.io"
+  - "rbac.authorization.k8s.io"
+  - "apps"
+  - "batch"
+  - "networking.k8s.io"
+  - ""
+  resources:
+  - nodes
+  - storageclasses
+  - clusterrolebindings
+  - clusterroles
+  - persistentvolumes
+  - namespaces
+  - configmaps
+  - persistentvolumeclaims
+  - pods
+  - secrets
+  - serviceaccounts
+  - services
+  - daemonsets
+  - deployments
+  - replicasets
+  - statefulsets
+  - cronjobs
+  - jobs
+  - ingresses
+  - rolebindings
+  - roles
+  verbs: ["get", "list"]

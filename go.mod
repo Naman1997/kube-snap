@@ -1,4 +1,4 @@
-module kube-snap.io/kube-snap
+module kubesnap.io/kubesnap
 
 go 1.18
 
