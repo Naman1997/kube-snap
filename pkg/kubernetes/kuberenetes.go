@@ -44,8 +44,7 @@ func SaveNodes(clientset *kubernetes.Clientset, codec runtime.Codec, wg *sync.Wa
 		item := kubeObject.Items[index]
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
-		path := nodePath + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(nodePath+item.GetName(), string(yaml))
 	}
 }
 
@@ -59,8 +58,7 @@ func SaveStorageClasses(clientset *kubernetes.Clientset, codec runtime.Codec, wg
 		item := kubeObject.Items[index]
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
-		path := storageclassPath + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(storageclassPath+item.GetName(), string(yaml))
 	}
 }
 
@@ -74,8 +72,7 @@ func SaveClusterRoleBindings(clientset *kubernetes.Clientset, codec runtime.Code
 		item := kubeObject.Items[index]
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
-		path := clusterrolebindingPath + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(clusterrolebindingPath+item.GetName(), string(yaml))
 	}
 }
 
@@ -89,8 +86,7 @@ func SaveClusterRoles(clientset *kubernetes.Clientset, codec runtime.Codec, wg *
 		item := kubeObject.Items[index]
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
-		path := clusterrolePath + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(clusterrolePath+item.GetName(), string(yaml))
 	}
 }
 
@@ -105,8 +101,7 @@ func SavePersistentVolumes(clientset *kubernetes.Clientset, codec runtime.Codec,
 		item := kubeObject.Items[index]
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
-		path := persistentVolumePath + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(persistentVolumePath+item.GetName(), string(yaml))
 	}
 }
 
@@ -122,8 +117,7 @@ func SaveNamespaces(clientset *kubernetes.Clientset, codec runtime.Codec) []stri
 		namespaces = append(namespaces, item.Name)
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
-		path := namspacePath + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(namspacePath+item.GetName(), string(yaml))
 	}
 	return namespaces
 }
@@ -139,8 +133,7 @@ func SaveConfigMaps(clientset *kubernetes.Clientset, codec runtime.Codec, namesp
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(configMapPath + namespace)
-		path := configMapPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(configMapPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -155,8 +148,7 @@ func SavePersistentVolumeClaims(clientset *kubernetes.Clientset, codec runtime.C
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(persistentVolumeClaimPath + namespace)
-		path := persistentVolumeClaimPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(persistentVolumeClaimPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -171,8 +163,7 @@ func SavePods(clientset *kubernetes.Clientset, codec runtime.Codec, namespace st
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(podPath + namespace)
-		path := podPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(podPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -187,8 +178,7 @@ func SaveSecrets(clientset *kubernetes.Clientset, codec runtime.Codec, namespace
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(secretPath + namespace)
-		path := secretPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(secretPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -203,8 +193,7 @@ func SaveServiceAccounts(clientset *kubernetes.Clientset, codec runtime.Codec, n
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(serviceAccountPath + namespace)
-		path := serviceAccountPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(serviceAccountPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -219,8 +208,7 @@ func SaveServices(clientset *kubernetes.Clientset, codec runtime.Codec, namespac
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(servicePath + namespace)
-		path := servicePath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(servicePath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -235,8 +223,7 @@ func SaveDaemonsets(clientset *kubernetes.Clientset, codec runtime.Codec, namesp
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(daemonsetPath + namespace)
-		path := daemonsetPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(daemonsetPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -251,8 +238,7 @@ func SaveDeployments(clientset *kubernetes.Clientset, codec runtime.Codec, names
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(deploymentPath + namespace)
-		path := deploymentPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(deploymentPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -267,8 +253,7 @@ func SaveReplicaSets(clientset *kubernetes.Clientset, codec runtime.Codec, names
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(replicasetPath + namespace)
-		path := replicasetPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(replicasetPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -283,8 +268,7 @@ func SaveStatefulSets(clientset *kubernetes.Clientset, codec runtime.Codec, name
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(statefulsetPath + namespace)
-		path := statefulsetPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(statefulsetPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -299,8 +283,7 @@ func SaveCronJobs(clientset *kubernetes.Clientset, codec runtime.Codec, namespac
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(cronjobPath + namespace)
-		path := cronjobPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(cronjobPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -315,8 +298,7 @@ func SaveJobs(clientset *kubernetes.Clientset, codec runtime.Codec, namespace st
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(jobPath + namespace)
-		path := jobPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(jobPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -331,8 +313,7 @@ func SaveIngresses(clientset *kubernetes.Clientset, codec runtime.Codec, namespa
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(ingressPath + namespace)
-		path := ingressPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(ingressPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -347,8 +328,7 @@ func SaveRoleBindings(clientset *kubernetes.Clientset, codec runtime.Codec, name
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(rolebindingPath + namespace)
-		path := rolebindingPath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(rolebindingPath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }
 
@@ -363,7 +343,6 @@ func SaveRoles(clientset *kubernetes.Clientset, codec runtime.Codec, namespace s
 		yaml, err := runtime.Encode(codec, &item)
 		utilities.CheckIfError(err, "Unable to encode: "+item.Name+".")
 		utilities.CreateDir(rolePath + namespace)
-		path := rolePath + namespace + "/" + item.GetName()
-		utilities.CreateFile(path, string(yaml))
+		utilities.CreateFile(rolePath+namespace+"/"+item.GetName(), string(yaml))
 	}
 }

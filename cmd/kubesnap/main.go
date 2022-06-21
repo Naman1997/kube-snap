@@ -15,6 +15,7 @@ import (
 	"kubesnap.io/kubesnap/internal/config"
 	"kubesnap.io/kubesnap/internal/utilities"
 	k8s "kubesnap.io/kubesnap/pkg/kubernetes"
+	snap "kubesnap.io/kubesnap/pkg/snap"
 )
 
 var (
@@ -37,8 +38,9 @@ const (
 	CACHE_SYNC_TIMEOUT     = "timed out waiting for caches to sync"
 
 	// Other constants
-	delimiter = ": "
-	WARNING   = "[WARNING]"
+	delimiter  = ": "
+	WARNING    = "[WARNING]"
+	secretsDir = "/etc/secrets/"
 )
 
 func main() {
@@ -125,12 +127,14 @@ func saveEvent(message string, description string, event *corev1.Event) {
 
 	// Print settings
 	fmt.Println()
-	utilities.CreateTimedLog(INFO+"Detected Matching Event:", eventReason, event.Message)
+	utilities.CreateTimedLog("[INFO] Detected Matching Event:", eventReason, event.Message)
 	utilities.CreateTimedLog("[CONFIG] event_based_snaps:", strconv.FormatBool(isEventBasedSnaps))
 	utilities.CreateTimedLog("[CONFIG] resync_duration:", fmt.Sprint(resyncDuration))
 	utilities.CreateTimedLog("[CONFIG] reason_regex:", reasonRegex.String())
 	utilities.CreateTimedLog("[CONFIG] print_warnings:", strconv.FormatBool(isPrintWarnings))
 
 	// Take a snapshot
-	takeSnap(clientset, scheme, serializer, message, description)
+	snap.TakeSnap(clientset, scheme, serializer, message,
+		description, utilities.GetValueOf(secretsDir, "repo-url"),
+		utilities.GetValueOf(secretsDir, "repo-branch"))
 }
