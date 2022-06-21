@@ -24,6 +24,9 @@ spec:
           - name: config-volume
             mountPath: /etc/configs
             readOnly: true
+          - name: ansible-config-volume
+            mountPath: /etc/ansible
+            readOnly: true
           - name: repo-data
             mountPath: /repo
         resources:
@@ -43,3 +46,6 @@ spec:
       - name: config-volume
         configMap:
           name: {{ .Release.Name }}-config
+      - name: ansible-config-volume
+        configMap:
+          name: {{ .Release.Name }}-ansible-config
