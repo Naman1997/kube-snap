@@ -70,7 +70,6 @@ func main() {
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    saveCreatedEvent,
 		UpdateFunc: saveUpdatedEvent,
-		DeleteFunc: saveDeletedEvent,
 	})
 
 	go informer.Run(stopper)
@@ -95,12 +94,6 @@ func saveUpdatedEvent(oldObj interface{}, newObj interface{}) {
 	message := "Event Update Detected: " + oldEvent.Reason + " => " + newEvent.Reason
 	description := oldMessage + " => " + newMessage
 	saveEvent(message, description, newEvent)
-}
-
-func saveDeletedEvent(obj interface{}) {
-	event := obj.(*corev1.Event)
-	message := "Event Delete Detected: " + event.Reason
-	saveEvent(message, event.Reason+delimiter+event.Message, event)
 }
 
 func saveEvent(message string, description string, event *corev1.Event) {
@@ -137,4 +130,5 @@ func saveEvent(message string, description string, event *corev1.Event) {
 	snap.TakeSnap(clientset, scheme, serializer, message,
 		description, utilities.GetValueOf(secretsDir, "repo-url"),
 		utilities.GetValueOf(secretsDir, "repo-branch"))
+
 }
