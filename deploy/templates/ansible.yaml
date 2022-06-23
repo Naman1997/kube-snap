@@ -4,7 +4,8 @@ metadata:
   name: {{ .Release.Name }}-ansible-config
   namespace: {{ .Release.Namespace }}
 data:
-  {{ range $path, $bytes := .Files.Glob (printf "ansible/**.yaml")}}
+  {{- range $path, $d := .Files.Glob "ansible/**.yaml" }}
   {{ $name := base $path }}
-  {{- printf "%s" $name | trimSuffix ".yaml" | lower }}: {{ $.Files.Get $path | b64enc }}
+  {{ printf "%s" $name | trimSuffix ".yaml" | lower }}: |-
+  {{- $d | toString | nindent 4 }}
   {{ end }}
