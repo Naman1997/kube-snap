@@ -15,9 +15,16 @@ kubesnap is a [small](https://hub.docker.com/r/namanarora/kubesnap/tags) image a
 ```sh
 <!--Clone the repo-->
 git clone https://github.com/Naman1997/kubesnap.git
-cd kubesnap
+cd kubesnap/deploy
 <!--Update values for installation-->
 vim values.yaml
+<!--Update values for ansible[Create a yaml file for each event you want to auto-remediate]-->
+cd ansible
+vim ansible.cfg
+<!--You can remove/update the default playbook provided in that dir-->
+vim Failed.yaml
+<!--Go back to the dir with the values file-->
+cd ..
 <!--Begin installation-->
 helm install kubesnap ./deploy -n kubesnap -f ./deploy/values.yaml
 ```

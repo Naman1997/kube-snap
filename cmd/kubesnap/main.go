@@ -144,8 +144,8 @@ func saveEvent(message string, description string, event *corev1.Event) {
 		}
 	} else {
 		utilities.CreateTimedLog("Discovered playbook to be triggered for ", eventReason, ". Executing playbook.")
-		response, err := ansible.TriggerPlaybook(playbook, 2)
-		utilities.CheckIfError(err, "Auto-remidiation step failed. "+string(response))
-		utilities.CreateTimedLog(string(response))
+		codecV1 := k8s.GenerateCodec(scheme, serializer, "", "v1")
+		eventYaml := k8s.FetchEvent(codecV1, event)
+		ansible.TriggerPlaybook(playbook, 2, eventYaml)
 	}
 }

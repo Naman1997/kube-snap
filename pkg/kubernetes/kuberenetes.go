@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
@@ -345,4 +346,10 @@ func SaveRoles(clientset *kubernetes.Clientset, codec runtime.Codec, namespace s
 		utilities.CreateDir(rolePath + namespace)
 		utilities.CreateFile(rolePath+namespace+"/"+item.GetName(), string(yaml))
 	}
+}
+
+func FetchEvent(codec runtime.Codec, event *corev1.Event) string {
+	yaml, err := runtime.Encode(codec, event)
+	utilities.CheckIfError(err, "Unable to encode: "+event.GetName()+".")
+	return string(yaml)
 }
