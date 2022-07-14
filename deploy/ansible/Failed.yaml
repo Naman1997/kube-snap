@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Get all pods
+      shell: "kubectl get pods -A"
+    - name: Print event yaml
+      ansible.builtin.debug:
+        msg: "{{ message }}"

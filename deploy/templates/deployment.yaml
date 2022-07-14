@@ -24,6 +24,12 @@ spec:
           - name: config-volume
             mountPath: /etc/configs
             readOnly: true
+          - name: ansible-playbooks-volume
+            mountPath: /etc/playbooks
+            readOnly: true
+          - name: ansible-config-volume
+            mountPath: /etc/ansible
+            readOnly: true
           - name: repo-data
             mountPath: /repo
         resources:
@@ -43,3 +49,12 @@ spec:
       - name: config-volume
         configMap:
           name: {{ .Release.Name }}-config
+      - name: ansible-playbooks-volume
+        configMap:
+          name: {{ .Release.Name }}-ansible-playbooks
+      - name: ansible-config-volume
+        configMap:
+          name: {{ .Release.Name }}-ansible-config
+          items:
+            - key: ansible.cfg
+              path: ansible.cfg

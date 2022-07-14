@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-ansible-config
+  namespace: {{ .Release.Namespace }}
+data:
+  ansible.cfg: |-
+{{ .Files.Get "ansible/ansible.cfg" | indent 4 }}

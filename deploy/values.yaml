@@ -15,7 +15,7 @@ settings:
   last_seen_duration: 100
   # Enables/Disables warnings about ignored events
   print_warnings: false
-  # kubesnap only processes events whose reason string matches reason_regex.
+  # kubesnap only processes events whose event messages matches reason_regex. [Example: .*ErrImagePull.*]
   # Processes all events by default 
   # https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/events/event.go
   reason_regex: ""

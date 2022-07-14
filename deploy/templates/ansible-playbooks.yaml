@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-ansible-playbooks
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- range $path, $d := .Files.Glob "ansible/**.yaml" }}
+  {{- $name := base $path }}
+  {{ printf "%s" $name }}: |-
+  {{- $d | toString | nindent 4 }}
+  {{ end }}

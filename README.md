@@ -8,16 +8,23 @@ Currently, kubesnap can react to an event in kubernetes by commiting changes fou
 
 In the future releases, kubesnap will also support [reacting to specific types of events using an ansible palybook.](https://github.com/Naman1997/kubesnap/issues/11)
 
-kubesnap is a [small (<50MB)](https://hub.docker.com/layers/237378881/namanarora/kubesnap/latest/images/sha256-216355533e9c08b7794f476e7a337466fdaaf948513995243cdf6f8d1dd25369?context=repo) image and runs natively inside kubernetes while requiring minimal amounts of memory and cpu.
+kubesnap is a [small](https://hub.docker.com/r/namanarora/kubesnap/tags) image and runs natively inside kubernetes while requiring minimal amounts of memory and cpu.
 
 ## Installation
 
 ```sh
 <!--Clone the repo-->
 git clone https://github.com/Naman1997/kubesnap.git
-cd kubesnap
+cd kubesnap/deploy
 <!--Update values for installation-->
 vim values.yaml
+<!--Update values for ansible[Create a yaml file for each event you want to auto-remediate]-->
+cd ansible
+vim ansible.cfg
+<!--You can remove/update the default playbook provided in that dir-->
+vim Failed.yaml
+<!--Go back to the dir with the values file-->
+cd ..
 <!--Begin installation-->
 helm install kubesnap ./deploy -n kubesnap -f ./deploy/values.yaml
 ```
