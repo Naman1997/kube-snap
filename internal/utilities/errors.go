@@ -13,5 +13,6 @@ func CheckIfError(err error, message string) {
 		CreateTimedLog("[ERROR]", message)
 	}
 
+	CreateTimedLog(err.Error())
 	log.Fatal(err)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"os"
 	"strconv"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
+	"kubesnap.io/kubesnap/internal/ansible"
 	"kubesnap.io/kubesnap/internal/config"
 	"kubesnap.io/kubesnap/internal/utilities"
 	k8s "kubesnap.io/kubesnap/pkg/kubernetes"
@@ -98,7 +100,9 @@ func saveUpdatedEvent(oldObj interface{}, newObj interface{}) {
 
 func saveEvent(message string, description string, event *corev1.Event) {
 	eventReason := event.Reason
+	eventMessage := event.Message
 	lastSeenDuration := time.Now().Unix() - event.LastTimestamp.Time.Unix()
+	fmt.Println("------------------------------------------")
 
 	// Print warnings and return
 	if isEventBasedSnaps && event.Type == corev1.EventTypeNormal {
@@ -106,9 +110,9 @@ func saveEvent(message string, description string, event *corev1.Event) {
 			utilities.CreateTimedLog(WARNING, "Ignored normal event:", eventReason)
 		}
 		return
-	} else if !reasonRegex.MatchString(eventReason) {
+	} else if !reasonRegex.MatchString(eventMessage) {
 		if isPrintWarnings {
-			utilities.CreateTimedLog(WARNING, "Ignored event:", eventReason, ". Regex match failed.")
+			utilities.CreateTimedLog(WARNING, "Ignored event:", eventReason, ". Regex match failed on event message. Event message: ", eventMessage)
 		}
 		return
 	} else if lastSeenDuration > int64(lastSeenThreshold) {
@@ -120,7 +124,7 @@ func saveEvent(message string, description string, event *corev1.Event) {
 
 	// Print settings
 	fmt.Println()
-	utilities.CreateTimedLog("[INFO] Detected Matching Event:", eventReason, event.Message)
+	utilities.CreateTimedLog("[INFO] Detected Matching Event:", eventReason, ". Event message: ", eventMessage)
 	utilities.CreateTimedLog("[CONFIG] event_based_snaps:", strconv.FormatBool(isEventBasedSnaps))
 	utilities.CreateTimedLog("[CONFIG] resync_duration:", fmt.Sprint(resyncDuration))
 	utilities.CreateTimedLog("[CONFIG] reason_regex:", reasonRegex.String())
@@ -131,4 +135,17 @@ func saveEvent(message string, description string, event *corev1.Event) {
 		description, utilities.GetValueOf(secretsDir, "repo-url"),
 		utilities.GetValueOf(secretsDir, "repo-branch"))
 
+	// Check if there is an ansible playbook that matches the current event
+	playbook := "/etc/playbooks/" + eventReason + ".yaml"
+	_, err := os.Stat(playbook)
+	if err != nil {
+		if isPrintWarnings {
+			utilities.CreateTimedLog(WARNING, "No automated response found for ", eventReason, ". Skipping auto-remidiation step.")
+		}
+	} else {
+		utilities.CreateTimedLog("Discovered playbook to be triggered for ", eventReason, ". Executing playbook.")
+		response, err := ansible.TriggerPlaybook(playbook, 2)
+		utilities.CheckIfError(err, "Auto-remidiation step failed. "+string(response))
+		utilities.CreateTimedLog(string(response))
+	}
 }

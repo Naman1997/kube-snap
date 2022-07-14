@@ -48,9 +48,11 @@ const (
 func TakeSnap(clientset *kubernetes.Clientset, scheme *runtime.Scheme, serializer *json.Serializer,
 	reason string, description string, repoUrl string, branch string) {
 
+	var err error
+
 	// Setup workdir
 	// Make sure clone dir exists
-	_, err := os.Stat(cloneDir)
+	_, err = os.Stat(cloneDir)
 	utilities.CheckIfError(err, CLONE_DIR_NOT_DETECTED)
 
 	// Change dir to repo

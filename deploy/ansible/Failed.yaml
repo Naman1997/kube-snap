@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  tasks:
+    - name: pstree
+      shell: "pstree"
+    - name: Get all pods
+      shell: "kubectl get pods -A"
