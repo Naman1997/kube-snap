@@ -4,7 +4,9 @@
 
 kubesnap is a tool for observing events in kuberenetes and reacting to them in an automated manner.
 
-Currently, kubesnap can react to an event in kubernetes by commiting changes found in the cluster resources to a git repo. This helps in obeservability in terms of what resources were changed inside the cluster whilst the event occoured.
+Kubesnap can react to an event in kubernetes by commiting changes found in the cluster resources to a git repo. This helps in obeservability in terms of what resources were changed inside the cluster whilst the event occoured.
+
+Kubesnap remediatiates issues by running an ansible playbook specified by the user for a particular event. Yuo can find the default playbook for a Failed event in deploy/ansible dir.
 
 kubesnap is a [small](https://hub.docker.com/r/namanarora/kubesnap/tags) image and runs natively inside kubernetes while requiring minimal amounts of memory and cpu.
 
