@@ -14,7 +14,7 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s
 RUN chmod +x ./kubectl
 
 FROM alpine:latest
-RUN apk add -U --no-cache git ansible curl
+RUN apk add -U --no-cache git ansible
 COPY --from=builder /app/app ./
 COPY --from=builder /app/kubectl /usr/local/bin/kubectl
 CMD ["./app"]
