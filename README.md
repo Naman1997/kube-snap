@@ -29,6 +29,6 @@ cd ..
 helm install kubesnap ./deploy -n kubesnap -f ./deploy/values.yaml
 ```
 
-## References
-- [Kubernetes shared informer](https://gianarb.it/blog/kubernetes-shared-informer)
-- [Golang standard folder structure](https://github.com/golang-standards/project-layout)
+## Notes
+
+`kubectl` is available inside the pod. However the default access provided to the pod is "get", "list" and "watch". Therefore, if you want to run commands like `kubectl create` or `kubectl delete` - you'll need to manually edit the cluster role access in [clusterrole.yaml](https://github.com/Naman1997/kubesnap/blob/main/deploy/templates/clusterrole.yaml).
