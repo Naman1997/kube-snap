@@ -29,6 +29,17 @@ cd ..
 helm install kubesnap ./deploy -n kubesnap -f ./deploy/values.yaml
 ```
 
-## References
-- [Kubernetes shared informer](https://gianarb.it/blog/kubernetes-shared-informer)
-- [Golang standard folder structure](https://github.com/golang-standards/project-layout)
+## Notes
+
+`kubectl` is available inside the pod. However the default access provided to the pod is "get", "list" and "watch". Therefore, if you want to run commands like `kubectl create` or `kubectl delete` - you'll need to manually edit the cluster role access in [clusterrole.yaml](https://github.com/Naman1997/kubesnap/blob/main/deploy/templates/clusterrole.yaml).
+
+## Todo List
+
+- [x] [Take a cluster snapshot in a git repo on a failure event](https://github.com/Naman1997/kubesnap/issues/6)
+- [x] [Enable auto-remediation using ansible playbooks](https://github.com/Naman1997/kubesnap/issues/11)
+- [x] [Add a helm chart](https://github.com/Naman1997/kubesnap/issues/3)
+- [ ] [Add unit tests for methods in /pkg](https://github.com/Naman1997/kubesnap/issues/16)
+- [ ] [Create a UI with auth - user can see logs from here initially](https://github.com/Naman1997/kubesnap/issues/21)
+- [ ] Save state of events and remediations using a database
+- [ ] Show each auto-remediation in a table with the commitId for it's snapshot in the UI
+- [ ] Send an update event to the UI after the database has been updated (Some sort of auto-refresh)
