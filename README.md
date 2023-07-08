@@ -38,7 +38,7 @@ helm install kubesnap ./deploy -n kubesnap -f ./deploy/values.yaml
 - [x] [Take a cluster snapshot in a git repo on a failure event](https://github.com/Naman1997/kubesnap/issues/6)
 - [x] [Enable auto-remediation using ansible playbooks](https://github.com/Naman1997/kubesnap/issues/11)
 - [x] [Add a helm chart](https://github.com/Naman1997/kubesnap/issues/3)
-- [ ] [Add unit tests for methods in /pkg](https://github.com/Naman1997/kubesnap/issues/16)
+
 - [ ] [Create a UI with auth - user can see logs from here initially](https://github.com/Naman1997/kubesnap/issues/21)
 - [ ] Save state of events and remediations using a database
 - [ ] Show each auto-remediation in a table with the commitId for it's snapshot in the UI
